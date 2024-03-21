@@ -90,26 +90,33 @@ def write_tests(cases: list[dict] = None):
         print("[ERROR] No cases were specified")
         return
 
-    # Load the templates
-    with open("templates/venom/base.yml", "r") as file:
-        venom_template = yaml.safe_load(file)
+    template = {
+        "name": "Name",
+        "testcases": []
+    }
+    
+    test_template = {
+        "name": "",
+        "steps": [
+            {
+                "type": "",
+                "method": "",
+                "url": "",
+                "body": "",
+                "assertions": [],
+                "expect": []
+            }
+        ]
+    }
 
-    with open("templates/venom/http_test.yml", "r") as file:
-        venom_test_template = yaml.safe_load(file)[0]
-
-    # Make sure the file exists and is empty
-    with open('tests.yaml', 'w') as file:
-        print("", end="", file=file)
-
-    base = copy.deepcopy(venom_template)
-    tests = [].copy()
+    generated_tests = []
 
     # Generate the test
     for case in cases:
-        tests.append(parse_case_to_venom_test(case, venom_test_template))
+        generated_tests.append(parse_case_to_venom_test(case, test_template))
 
-    base["testcases"] = tests
+    template["testcases"] = generated_tests
 
     # Export the tests
-    with open('tests.yaml', 'a') as file:
-        yaml.dump(base, file)
+    with open('tests.yaml', 'w') as file:
+        yaml.dump(template, file)
